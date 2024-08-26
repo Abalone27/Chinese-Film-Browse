@@ -1,0 +1,103 @@
+<template>
+  <div :class="['filter', { active: details.isActive }]">
+    <div id="popup">
+      <div class="content">
+        <h2>{{ details.title == null ? '标题正在加载中，请等待片刻~' : details.title }}</h2>
+        <p>
+          {{ details.brief == null ? '简介正在加载中，请等待片刻~' : details.brief }}
+        </p>
+        <img src="@/assets/images/cancel.png" @click="changeActive" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { inject, Ref } from 'vue';
+
+  interface Details {
+    title: string;
+    brief: string;
+    isActive: boolean;
+  }
+
+  const details = inject('details') as Ref<Details>;
+
+  function changeActive() {
+    details.value.isActive = !details.value.isActive;
+  }
+</script>
+
+<style scoped lang="scss">
+  .filter {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+    visibility: hidden;
+    &.active {
+      visibility: visible;
+      &::before {
+        backdrop-filter: blur(10px);
+      }
+
+      #popup {
+        transform: scale(1);
+      }
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0);
+      transition: 0.5s;
+      z-index: -1;
+    }
+    #popup {
+      position: fixed;
+      z-index: 1000;
+      background: #fff;
+      width: min(850px, 70%);
+      padding: 60px 35px 35px;
+      box-shadow: 0 15px 30px inset rgba(0, 0, 0, 0.08);
+      transform: scale(0);
+      transition: transform 0.5s ease;
+      .content {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        h2 {
+          font-size: 2rem;
+          margin: 0 10px 24px;
+        }
+        p {
+          text-align: center;
+          font-size: 1.25rem;
+          color: #333;
+        }
+        img {
+          position: absolute;
+          width: 24px;
+          top: -30px;
+          right: -10px;
+          &:hover {
+            cursor: pointer;
+            transform: scale(1.2) rotate(90deg);
+            transition: 0.2s;
+          }
+        }
+      }
+    }
+  }
+</style>
