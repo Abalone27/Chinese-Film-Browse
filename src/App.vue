@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <film-header></film-header>
+    <film-header @switchMode="onSwitchMode"></film-header>
     <section>
       <hero></hero>
       <content></content>
@@ -39,7 +39,10 @@
     isActive: false,
   });
 
+  const isModeChanged=ref(false)
+
   provide('details', details);
+  provide('modeChange',isModeChanged);
 
   async function GetInfo(API: string | URL | Request) {
     const response = await fetch(API);
@@ -52,10 +55,22 @@
   onMounted(() => {
     GetInfo(API);
   });
+
+  function onSwitchMode() {
+    const section=document.querySelector("section")
+    section?.classList.toggle("night")
+    isModeChanged.value=!isModeChanged.value
+  }
 </script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap');
+
+  :root {
+    --light-bg-color:rgba(250, 235, 215, 0.3);
+    --night-bg-color:rgba(61, 61, 61, 0.971);
+    --text-color:#f8f4f4;
+  }
 
   * {
     box-sizing: border-box;
@@ -71,11 +86,16 @@
 
   .container {
     position: relative;
+    height: 100%;
   }
 
   section {
     width: 100%;
-    background-color: rgba(250, 235, 215, 0.3);
+    background-color: var(--light-bg-color);
+  }
+  section.night {
+    background-color: var(--night-bg-color);
+    color: var(--text-color);
   }
 
   .movie {
@@ -84,5 +104,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    z-index: 1000;
   }
 </style>

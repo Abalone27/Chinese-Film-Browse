@@ -1,5 +1,5 @@
 <template>
-  <section class="container">
+  <section class="container" :class="modeClass">
     <h2>背景</h2>
     <p>
       在当今社会，获取电影信息变得前所未有的便捷。随着互联网的普及和各种数字平台的兴起，用户只需通过手机或电脑，便可以轻松访问到最新的电影资讯、预告片、影评以及上映时间等详细信息。社交媒体、专门的电影评分网站以及流媒体服务提供了丰富的资源，使得选择观看电影变得更加简单和透明。然而，由于信息的丰富性和多样性，用户也面临信息过载的问题，难以快速找到高质量、可靠的电影推荐。
@@ -11,6 +11,18 @@
     </p>
   </section>
 </template>
+
+<script setup lang="ts">
+import { inject ,ref,Ref,watchEffect} from 'vue';
+
+const isDarkMode =inject("modeChange") as Ref<boolean>
+const modeClass=ref("")
+
+watchEffect(()=>{
+  modeClass.value=isDarkMode.value?"night":""
+})  
+
+</script>
 
 <style scoped lang="scss">
 section.container {
@@ -30,6 +42,11 @@ section.container {
     line-height: 70px;
     font-size: 1.7rem;
     letter-spacing: 1.2px;
+  }
+}
+section.container.night {
+  h2,h3,p {
+    color: #c4c2c2;
   }
 }
 </style>

@@ -17,7 +17,7 @@
         <li><a href="#">即将推出</a></li>
       </ul>
       <div class="btn">
-        <button @click="switchMode">切换模式</button>
+        <button @click="handleSwitchMode">切换模式</button>
       </div>
     </div>
   </nav>
@@ -26,7 +26,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-let mode = ref('')
+const mode = ref('active')
+const emit=defineEmits(["switchMode"])
+
+function handleSwitchMode() {
+  switchMode()
+  emit("switchMode")
+}
 
 function switchMode() {
   if (mode.value == '') {

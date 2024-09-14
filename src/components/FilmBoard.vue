@@ -1,5 +1,5 @@
 <template>
-  <div class="container" @click="ShowDetails(movie.movieId)">
+  <div class="container" :class="modeClass" @click="ShowDetails(movie.movieId)">
     <img :src="movie.poster" :alt="movie.name" />
     <div class="movie-info">
       <h3>{{ movie.name }}</h3>
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, inject, Ref } from 'vue';
+  import {inject, ref, Ref,watchEffect} from 'vue';
 
   interface Movie {
     movieId: number;
@@ -27,6 +27,13 @@
   }
 
   const details = inject('details') as Ref<Details>;
+  const isModeChanged = inject("modeChange") as Ref<boolean>
+
+  const modeClass=ref("")
+
+  watchEffect(()=>{
+    modeClass.value=isModeChanged.value?"night":""
+  })
 
   function getClassByRate(vote: number) {
     if (vote >= 8) {
@@ -58,10 +65,14 @@
 </script>
 
 <style scoped lang="scss">
+  :root{
+    --light-color:rgba(250, 235, 215, 0.8);
+    --night-color:rgba(121, 111, 97, 0.8);
+  }
   .container {
     position: relative;
     width: 300px;
-    background-color: rgba(250, 235, 215, 0.8);
+    background-color: --light-bg-color;
 
     margin: 30px 40px;
     border: 1px solid rgba(0, 0, 0, 0.3);
@@ -72,6 +83,9 @@
       cursor: pointer;
       transform: translateY(-4px) scale(1.02);
     }
+  }
+  .container.night {
+    background-color: var(--night-color);
   }
   .img {
     width: 100%;
