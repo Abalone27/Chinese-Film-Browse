@@ -12,9 +12,9 @@
         <h1>电影展览</h1>
       </div>
       <ul>
-        <li><a href="#">往期经典</a></li>
-        <li><a href="#">当下热映</a></li>
-        <li><a href="#">即将推出</a></li>
+        <li><router-link to="/former">往期经典</router-link></li>
+        <li><router-link to="/">当下热映</router-link></li>
+        <li><router-link to="#">即将推出</router-link></li>
       </ul>
       <div class="btn">
         <button @click="handleSwitchMode">切换模式</button>
@@ -24,22 +24,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,watchEffect} from 'vue'
+import { storeToRefs } from 'pinia';
+import { useModeStore } from '../stores/modeStores'
 
-const mode = ref('active')
-const emit=defineEmits(["switchMode"])
+const modeStore = useModeStore()
 
+const {isNightMode} = storeToRefs(modeStore)
+const {toggleMode} =modeStore
+
+
+// 定义 mode 状态用于切换样式
+const mode = ref('');
+
+// 监听 isNightMode 的变化
+watchEffect(() => {
+  mode.value = isNightMode.value ? '' : 'active'; // 根据 isNightMode 切换样式
+});
+
+// 切换模式函数
 function handleSwitchMode() {
-  switchMode()
-  emit("switchMode")
-}
-
-function switchMode() {
-  if (mode.value == '') {
-    mode.value = 'active'
-  } else {
-    mode.value = ''
-  }
+  toggleMode()
 }
 </script>
 
@@ -113,7 +118,7 @@ nav {
 
 nav.active {
   background-color: #fff;
-  box-shadow: 0 2px 10px ragba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   .logo h1 {
     color: #222;
   }

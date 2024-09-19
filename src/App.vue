@@ -1,21 +1,23 @@
 <template>
   <div class="container">
-    <film-header @switchMode="onSwitchMode"></film-header>
-    <section>
+    <film-header></film-header>
+    <section :class="mode">
       <hero></hero>
       <content></content>
-      <ul class="movie">
-        <li v-for="movie in movies" :key="movie.movieId">
-          <film-board :movie="movie" :infoApi="Info_API"></film-board>
-        </li>
-      </ul>
+    <router-view></router-view>
     </section>
-    <film-info></film-info>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, provide } from 'vue';
+  import { ref, onMounted, provide,watchEffect } from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useModeStore } from './stores/modeStores';
+
+  const modeStore = useModeStore()
+
+  const {isNightMode} = storeToRefs(modeStore)
+
   interface Movie {
     movieId: number;
     name: string;
@@ -33,16 +35,15 @@
 
   const movies = ref<Movie[]>([]);
 
+  const mode = ref("")
+
   const details = ref<Details>({
     title: null,
     brief: null,
     isActive: false,
   });
 
-  const isModeChanged=ref(false)
-
   provide('details', details);
-  provide('modeChange',isModeChanged);
 
   async function GetInfo(API: string | URL | Request) {
     const response = await fetch(API);
@@ -56,11 +57,10 @@
     GetInfo(API);
   });
 
-  function onSwitchMode() {
-    const section=document.querySelector("section")
-    section?.classList.toggle("night")
-    isModeChanged.value=!isModeChanged.value
-  }
+  watchEffect(() => {
+    mode.value = isNightMode.value?"night":""
+});
+
 </script>
 
 <style>
@@ -68,7 +68,7 @@
 
   :root {
     --light-bg-color:rgba(250, 235, 215, 0.3);
-    --night-bg-color:rgba(61, 61, 61, 0.971);
+    --night-bg-color:rgba(50, 50, 50, 0.971);
     --text-color:#f8f4f4;
   }
 

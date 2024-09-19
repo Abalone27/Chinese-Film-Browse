@@ -13,6 +13,8 @@
 
 <script setup lang="ts">
   import {inject, ref, Ref,watchEffect} from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useModeStore } from '../stores/modeStores'
 
   interface Movie {
     movieId: number;
@@ -27,12 +29,13 @@
   }
 
   const details = inject('details') as Ref<Details>;
-  const isModeChanged = inject("modeChange") as Ref<boolean>
+  const modeStore = useModeStore();
+  const { isNightMode } = storeToRefs(modeStore); 
 
   const modeClass=ref("")
 
   watchEffect(()=>{
-    modeClass.value=isModeChanged.value?"night":""
+    modeClass.value=isNightMode.value?"night":""
   })
 
   function getClassByRate(vote: number) {

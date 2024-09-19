@@ -13,13 +13,18 @@
 </template>
 
 <script setup lang="ts">
-import { inject ,ref,Ref,watchEffect} from 'vue';
+import { ref,watchEffect } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useModeStore } from '../stores/modeStores'
 
-const isDarkMode =inject("modeChange") as Ref<boolean>
+
+const modeStore = useModeStore()
+const { isNightMode } = storeToRefs(modeStore)
+
 const modeClass=ref("")
 
 watchEffect(()=>{
-  modeClass.value=isDarkMode.value?"night":""
+  modeClass.value=isNightMode.value?"night":""
 })  
 
 </script>

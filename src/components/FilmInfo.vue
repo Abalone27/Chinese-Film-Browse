@@ -14,6 +14,8 @@
 
 <script setup lang="ts">
   import { inject, ref,Ref ,watchEffect} from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useModeStore } from '../stores/modeStores'
 
   interface Details {
     title: string;
@@ -22,12 +24,13 @@
   }
 
   const details = inject('details') as Ref<Details>;
-  const isModeChanged = inject("modeChange") as Ref<Boolean> 
+  const modeStore = useModeStore();
+  const { isNightMode } = storeToRefs(modeStore); 
 
   const modeClass=ref("")
 
   watchEffect(()=>{
-    modeClass.value=isModeChanged.value?"night":""
+    modeClass.value=isNightMode.value?"night":""
   })
 
   function changeActive() {
