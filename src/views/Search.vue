@@ -13,7 +13,7 @@
     <div v-if="error" class="error-message">
       无法加载数据: {{ error }}
     </div>
-    <film-info v-if="selectedMovie" :details="selectedMovie" />
+    <film-info></film-info>
   </div>
 </template>
 
@@ -21,7 +21,6 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import FilmBoardSearch from '@/components/FilmBoard_Search.vue';
-import FilmInfo from '@/components/FilmInfo.vue';
 
 const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
 
@@ -29,7 +28,7 @@ const route = useRoute();
 const keyword = ref(route.query.keyword || '');
 const movies = ref([]);
 const error = ref('');
-const selectedMovie = ref(null); // 用于展示详情的选中电影
+const selectedMovie = ref(null);
 
 // 获取电影列表
 async function fetchMovies() {
@@ -38,7 +37,7 @@ async function fetchMovies() {
     const response = await fetch(searchAPI);
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    movies.value = data; // 根据实际 API 响应结构进行调整
+    movies.value = data;
   } catch (error) {
     console.error('Failed to fetch movies:', error);
     error.value = '无法加载电影数据';

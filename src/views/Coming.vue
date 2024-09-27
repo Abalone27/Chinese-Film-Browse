@@ -1,73 +1,58 @@
 <template>
   <section :class="mode">
-    <h1>往期经典</h1>
+    <h1>即将推出</h1>
     <ul class="movie">
-      <li v-for="movie in movies" :key="movie.movieId">
+      <li v-for="movie in movies" :key="movie.id">
         <film-board :movie="movie" :infoApi="Info_API"></film-board>
       </li>
     </ul>
+    <film-info></film-info>
   </section>
-  <film-info></film-info>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useModeStore } from '@/stores/modeStores';
-import FilmBoard from '@/components/FilmBoard_Former.vue';
-
-interface MovieInfo {
-  title: string;
-  actors: string;
-  showInfo: string;
-}
-
-interface Movie {
-  movieId: number;
-  poster: string;
-  score: string;
-  movieInfo: MovieInfo;
-}
+import { useModeStore } from '../stores/modeStores';
+import FilmBoard from '@/components/FilmBoard_Coming.vue';
 
 const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
 const mode = ref("");
 
-// API 路径
-const API = 'https://apis.netstart.cn/maoyan/index/moreClassicList';
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
-
-// 定义电影列表
-const movies = ref<Movie[]>([]);
-
-// 获取往期经典电影数据
-async function GetClassicMovies() {
-  const response = await fetch(API);
-  const data = await response.json();
-  console.log(data);
-
-  // 处理返回的数据
-  movies.value = data.map((movie: any) => ({
-    movieId: Number(movie.movieId),
-    name: movie.movieInfo?.title || movie.name || '未知标题',
-    poster: movie.poster || '',
-    score: movie.score || '暂无评分',
-    movieInfo: {
-      title: movie.movieInfo?.title || '未知标题',
-      actors: movie.movieInfo?.actors || '未知演员',
-      showInfo: movie.movieInfo?.showInfo || '未知上映信息',
-    }
-  }));
+interface Movie {
+  id: number;
+  comingTitle: string;
+  img: string;
+  nm: string;
+  sc: string;
+  rt: string;
+  star: string;
+  showInfo: string;
+  wish: number;
 }
 
-// 根据夜间模式调整样式
+const API = 'https://apis.netstart.cn/maoyan/index/comingList';
+const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
+
+const movies = ref<Movie[]>([]);
+
+async function GetInfo(apiUrl: string) {
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    movies.value = data.coming; 
+  } catch (error) {
+    console.error("Failed to fetch movie data:", error);
+  }
+}
+
 watchEffect(() => {
   mode.value = isNightMode.value ? "night" : "";
 });
 
-// 组件挂载时获取数据
 onMounted(() => {
-  GetClassicMovies();
+  GetInfo(API);
 });
 </script>
 
@@ -90,11 +75,6 @@ body {
   font-family: 'Noto Sans SC', 'sans-serif';
   padding-bottom: 50px;
   color: #222;
-}
-
-.container {
-  position: relative;
-  height: 100%;
 }
 
 section {

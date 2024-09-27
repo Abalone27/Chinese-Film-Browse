@@ -14,6 +14,7 @@ import FilmInfo from '@/components/FilmInfo.vue';
 import Former from './views/Former.vue';
 import Latest from './views/Latest.vue';
 import Search from './views/Search.vue';
+import Coming from './views/Coming.vue';
 
 
 const app = createApp(App);
@@ -22,7 +23,8 @@ const router = createRouter({
     routes: [
         { path: '/', component: Latest },
         { path: "/former", component: Former },
-        { path: '/search', component: Search}
+        { path: '/search', component: Search},
+        { path: '/coming', component: Coming}
     ],
 });
 

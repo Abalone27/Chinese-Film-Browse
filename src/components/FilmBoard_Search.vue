@@ -16,7 +16,7 @@ import { storeToRefs } from 'pinia';
 import { useModeStore } from '@/stores/modeStores';
 
 interface Movie {
-  id: number; // 确保使用与父组件一致的字段名
+  id: number;
   name: string;
   poster: string;
   score: string;
@@ -46,13 +46,11 @@ function getClassByRate(score: number) {
   }
 }
 
-// 接收props
 const props = defineProps<{ movie: Movie; infoApi: string }>();
 const ratingColor = ref(getClassByRate(Number(props.movie.score) || 0));
 
-// 点击电影时触发事件，将电影传递给父组件
 function handleSelectMovie() {
-  console.log("Selected movie:", props.movie);  // 调试信息，确认 movie 是否正确传递
+  console.log("Selected movie:", props.movie);
   emit('select', props.movie);
 }
 </script>

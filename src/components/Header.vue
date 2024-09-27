@@ -8,10 +8,10 @@
       <ul>
         <li><router-link to="/former">往期经典</router-link></li>
         <li><router-link to="/">当下热映</router-link></li>
-        <li><router-link to="/search">即将推出</router-link></li>
+        <li><router-link to="/coming">即将推出</router-link></li>
       </ul>
       <div class="search-container">
-        <input type="text" v-model="keyword" placeholder="搜索电影">
+        <input type="text" v-model="keyword" @keydown.enter="searchMovies" placeholder="请输入关键词" />
         <button @click="searchMovies">搜索</button>
       </div>
       <div class="btn">
@@ -20,6 +20,8 @@
     </div>
   </nav>
 </template>
+
+
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
@@ -46,32 +48,18 @@ function handleSwitchMode() {
 
 // 搜索关键词
 const keyword = ref('');
-const movies = ref([]); // 用于存储搜索结果
 const router = useRouter(); // 获取路由器实例
 
 async function searchMovies() {
-  if (!keyword.value.trim()) {
+  const searchTerm = keyword.value.trim();
+  if (!searchTerm) {
     alert('请输入搜索关键词');
     return;
   }
-
-  const ci = 1;
-  const limit = 20;
-  const offset = 0;
-
-  try {
-    const response = await fetch(`https://apis.netstart.cn/maoyan/search/movies?keyword=${encodeURIComponent(keyword.value)}&ci=${ci}&offset=${offset}&limit=${limit}`);
-    const data = await response.json();
-    console.log(data);
-
-    // 假设返回的数据是电影列表
-    movies.value = data; // 将返回的数据赋值给 movies
-
-    // 导航到搜索结果页面，并传递关键词
-    router.push({ path: '/search', query: { keyword: keyword.value } });
-  } catch (error) {
-    console.error('搜索电影出错:', error);
-  }
+  // 跳转到搜索页面
+  router.push({ path: '/search', query: { keyword: searchTerm } });
+  // 清空搜索框
+  keyword.value = '';
 }
 </script>
 
@@ -138,18 +126,28 @@ nav {
       text-shadow: 0 0 5px;
     }
 
+    .search-container {
+      display: flex;
+      align-items: center;
+      margin-left: 60px;
+      input {
+        margin-right: 0px;
+      }
+    }
+
     button {
-      width: 290px;
+      width: 10px;
       color: #fff;
       padding: 7px 15px;
       opacity: 0.95;
-      border: 10px 10px #fff;
+      border: 10px 10px black;
     }
   }
 }
 
 .btn {
   padding: 7px 15px;
+  margin: 10px;
 }
 
 nav.active {
@@ -178,3 +176,4 @@ nav.active {
   }
 }
 </style>
+
