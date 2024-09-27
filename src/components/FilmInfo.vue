@@ -80,11 +80,11 @@
       background: #fff;
       width: 50%;
       max-width: 850px;
-      height: 50%;
+      max-height: 50%;
       padding: 20px;
       box-shadow: 0 15px 30px inset rgba(0, 0, 0, 0.08);
       transform: scale(0);
-      transition: transform 0.5s ease;
+      transition: transform 0.5s ease-in-out;
       overflow-y: auto;
       position: relative;
 
@@ -117,8 +117,8 @@
         cursor: pointer;
 
         &:hover {
-          transform: scale(1.2) rotate(90deg);
-          transition: 0.2s;
+          transform: scale(1.5) rotate(90deg);
+          transition: 0.5s ease;
         }
       }
     }

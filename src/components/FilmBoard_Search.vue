@@ -64,6 +64,7 @@ function handleSelectMovie() {
 .container {
   position: relative;
   width: 300px;
+  height: 450px;
   background-color: var(--light-color);
   margin: 30px 40px;
   border: 1px solid rgba(0, 0, 0, 0.3);
@@ -73,27 +74,43 @@ function handleSelectMovie() {
   cursor: pointer;
 
   &:hover {
-    transform: translateY(-4px) scale(1.02);
+    cursor: pointer;
+    transform: translateY(-5px) scale(1.05);
+    transition: 0.5s ease-in-out;
   }
 }
 
 .container.night {
   background-color: var(--night-color);
 }
+img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
 
 .movie-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
 
   h3 {
     font-size: 1.5rem;
+    padding: 8px 10px;
+    max-width: 60%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .rating {
     font-size: 1.5rem;
     margin-right: 10px;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
   }
 }
 </style>

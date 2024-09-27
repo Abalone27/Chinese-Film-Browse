@@ -1,6 +1,6 @@
 <template>
   <section :class="mode">
-    <h1>即将推出</h1>
+    <h1>Coming soon...</h1>
     <ul class="movie">
       <li v-for="movie in movies" :key="movie.id">
         <film-board :movie="movie" :infoApi="Info_API"></film-board>
@@ -95,5 +95,11 @@ section.night {
   justify-content: center;
   height: 100%;
   z-index: 1000;
+}
+
+h1 {
+  font-size: 36px;
+  text-align: center;
+  margin: 20px;
 }
 </style>

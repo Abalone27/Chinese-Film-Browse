@@ -1,5 +1,6 @@
 <template>
   <section :class="mode">
+    <h1>Hit movies...</h1>
     <ul class="movie">
       <li v-for="movie in movies" :key="movie.movieId">
         <film-board :movie="movie" :infoApi="Info_API"></film-board>
@@ -93,5 +94,11 @@ section.night {
   justify-content: center;
   height: 100%;
   z-index: 1000;
+}
+
+h1 {
+  font-size: 36px;
+  text-align: center;
+  margin: 20px;
 }
 </style>

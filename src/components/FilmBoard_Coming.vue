@@ -1,6 +1,6 @@
 <template>
-  <div class="container" :class="modeClass" @click="ShowDetails(movie.id)">
-    <img :src="movie.img" :alt="movie.comingTitle" />
+  <div class="container" :class="['fade', modeClass]" @click="ShowDetails(movie.id)">
+    <img class="img" :src="movie.img" :alt="movie.comingTitle" />
     <div class="movie-info">
       <h3>{{ movie.nm }}</h3>
       <span class="rating" :style="{ color: ratingColor }">
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, Ref, watchEffect } from 'vue';
+import { inject, ref, Ref, watchEffect, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
 
@@ -65,8 +65,6 @@ const ratingColor = getClassByRate(Number(props.movie.sc));
 async function ShowDetails(movieId: number) {
   const response = await fetch(props.infoApi + '?movieId=' + movieId);
   const data = await response.json();
-  console.log(movieId);
-  console.log(data.$share.wechat.message);
   const message = data.$share.wechat.message;
   details.value = {
     title: message.title,
@@ -74,6 +72,22 @@ async function ShowDetails(movieId: number) {
     isActive: true,
   };
 }
+
+// 添加 Intersection Observer
+onMounted(() => {
+  const containers = document.querySelectorAll('.container');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in'); // 添加淡入效果类
+      } else {
+        entry.target.classList.remove('fade-in'); // 移除淡入效果类
+      }
+    });
+  });
+
+  containers.forEach(container => observer.observe(container));
+});
 </script>
 
 <style scoped lang="scss">
@@ -85,17 +99,23 @@ async function ShowDetails(movieId: number) {
 .container {
   position: relative;
   width: 300px;
+  height: 450px;
   background-color: var(--light-color);
-
   margin: 30px 40px;
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   box-shadow: 4px 5px 10px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s ease;
+  opacity: 0;
+  transition: opacity 1.5s ease, transform 0.5s ease;
+
+  &.fade-in {
+    opacity: 1;
+  }
 
   &:hover {
     cursor: pointer;
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-5px) scale(1.05);
+    transition: 0.5s ease-in-out;
   }
 }
 
@@ -103,24 +123,43 @@ async function ShowDetails(movieId: number) {
   background-color: var(--night-color);
 }
 
+.img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+
 .movie-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden; 
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
   h3 {
     font-size: 1.5rem;
     padding: 8px 10px;
+    max-width: 50%;
+    overflow: hidden; 
+    text-overflow: ellipsis;
   }
 
   .rating {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-right: 10px;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
   }
 }
 
+
 .details {
-position: absolute;
-display: none;
+  position: absolute;
+  display: none;
 }
 </style>

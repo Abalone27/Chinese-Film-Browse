@@ -1,5 +1,5 @@
 <template>
-  <section class="container" :class="modeClass">
+  <section class="container" :class="['fade-in', modeClass, { active: sectionVisible }]" ref="section">
     <h2>背景</h2>
     <p>
       在当今社会，获取电影信息变得前所未有的便捷。随着互联网的普及和各种数字平台的兴起，用户只需通过手机或电脑，便可以轻松访问到最新的电影资讯、预告片、影评以及上映时间等详细信息。社交媒体、专门的电影评分网站以及流媒体服务提供了丰富的资源，使得选择观看电影变得更加简单和透明。然而，由于信息的丰富性和多样性，用户也面临信息过载的问题，难以快速找到高质量、可靠的电影推荐。
@@ -13,44 +13,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref,watchEffect } from 'vue';
+import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useModeStore } from '../stores/modeStores'
+import { useModeStore } from '../stores/modeStores';
 
+const modeStore = useModeStore();
+const { isNightMode } = storeToRefs(modeStore);
 
-const modeStore = useModeStore()
-const { isNightMode } = storeToRefs(modeStore)
+const modeClass = ref("");
+const sectionVisible = ref(false);
+const section = ref<HTMLElement | null>(null);
 
-const modeClass=ref("")
+onMounted(() => {
+  const observerOptions = { threshold: 0.1 };
 
-watchEffect(()=>{
-  modeClass.value=isNightMode.value?"night":""
-})  
+  const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    entries.forEach(entry => {
+      sectionVisible.value = entry.isIntersecting;
+    });
+  };
 
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+  if (section.value) observer.observe(section.value);
+});
 </script>
 
 <style scoped lang="scss">
 section.container {
+  height: 100vh;
   background-color: transparent;
   max-width: 80%;
   margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  padding: 20px; // 添加内边距以防文字紧贴边缘
 
-  h2,
+  &.active {
+    opacity: 1;
+    transform: translateY(0);
+    transition-duration: 2s;
+  }
+
+  h2 {
+    color: #555;
+    font-size: 3.8rem; // 减小字体大小
+    margin: 30px 0; // 减小上、下边距
+  }
+
   h3 {
     color: #555;
-    font-size: 5rem;
-    margin: 50px 0;
+    font-size: 2.8rem; // 减小字体大小
+    margin: 20px 0; // 减小上、下边距
   }
 
   p {
     color: #555;
-    line-height: 70px;
-    font-size: 1.7rem;
-    letter-spacing: 1.2px;
+    line-height: 1.5; // 调整行高
+    font-size: 1.8rem; // 减小字体大小
+    letter-spacing: 0.5px; // 调整字母间距
+    overflow-wrap: break-word; // 确保长单词换行
   }
 }
+
 section.container.night {
-  h2,h3,p {
+  h2, h3, p {
     color: #c4c2c2;
   }
 }

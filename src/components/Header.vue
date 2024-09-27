@@ -2,7 +2,6 @@
   <nav class="nav" :class="mode">
     <div class="container">
       <div class="logo">
-        <!-- SVG logo code -->
         <h1>电影展览</h1>
       </div>
       <ul>
@@ -11,8 +10,15 @@
         <li><router-link to="/coming">即将推出</router-link></li>
       </ul>
       <div class="search-container">
-        <input type="text" v-model="keyword" @keydown.enter="searchMovies" placeholder="请输入关键词" />
-        <button @click="searchMovies">搜索</button>
+        <input 
+          type="text" 
+          v-model="keyword" 
+          @keydown.enter="searchMovies" 
+          @click="handleInputClick" 
+          placeholder="请输入关键词" 
+          class="search-input"
+        />
+        <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
       </div>
       <div class="btn">
         <button @click="handleSwitchMode">切换模式</button>
@@ -21,11 +27,9 @@
   </nav>
 </template>
 
-
-
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
 
@@ -33,22 +37,17 @@ const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
 const { toggleMode } = modeStore;
 
-// 定义 mode 状态用于切换样式
 const mode = ref('');
-
-// 监听 isNightMode 的变化
 watchEffect(() => {
-  mode.value = isNightMode.value ? '' : 'active'; // 根据 isNightMode 切换样式
+  mode.value = isNightMode.value ? '' : 'active';
 });
 
-// 切换模式函数
 function handleSwitchMode() {
   toggleMode();
 }
 
-// 搜索关键词
 const keyword = ref('');
-const router = useRouter(); // 获取路由器实例
+const router = useRouter();
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();
@@ -56,13 +55,14 @@ async function searchMovies() {
     alert('请输入搜索关键词');
     return;
   }
-  // 跳转到搜索页面
   router.push({ path: '/search', query: { keyword: searchTerm } });
-  // 清空搜索框
+  keyword.value = '';
+}
+
+function handleInputClick() {
   keyword.value = '';
 }
 </script>
-
 
 <style scoped lang="scss">
 nav {
@@ -92,7 +92,6 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s ease-in-out;
 
     .logo {
       display: flex;
@@ -107,12 +106,6 @@ nav {
         opacity: 0.95;
         text-shadow: 0 1px 2px;
       }
-
-      svg {
-        width: 60px;
-        height: 60px;
-        margin-left: 10px;
-      }
     }
 
     ul {
@@ -122,25 +115,39 @@ nav {
       list-style-type: none;
       margin: 0 auto;
       padding: 7px 15px;
-      opacity: 0.95;
-      text-shadow: 0 0 5px;
     }
 
     .search-container {
       display: flex;
       align-items: center;
       margin-left: 60px;
-      input {
-        margin-right: 0px;
+
+      .search-input {
+        margin-right: 8px;
+        width: 70%;
+        transition: transform 0.3s ease;
+        font-size: 16px;
+      }
+
+      .search-input:focus {
+        transform: scale(1.05);
+      }
+
+      .search-icon {
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        transition: transform 0.3s ease;
+      }
+
+      .search-icon:hover {
+        transform: scale(1.2);
       }
     }
 
     button {
-      width: 10px;
       color: #fff;
       padding: 7px 15px;
-      opacity: 0.95;
-      border: 10px 10px black;
     }
   }
 }
@@ -160,7 +167,6 @@ nav.active {
 
   ul {
     color: #222;
-    text-shadow: 0 0 3px #fff;
   }
 
   a {
@@ -176,4 +182,3 @@ nav.active {
   }
 }
 </style>
-

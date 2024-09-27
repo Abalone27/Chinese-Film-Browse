@@ -1,11 +1,48 @@
 <template>
-  <div class="hero">
+  <div class="hero" ref="hero">
     <div class="container">
-      <h1>查看流行电影信息</h1>
-      <p>Find The Latest Film Info In China</p>
+      <h1 ref="title" class="fade-in" :class="{ 'active': titleVisible }">查看流行电影信息</h1>
+      <p ref="description" class="fade-in" :class="{ 'active': descriptionVisible }">Find The Latest Film Info In China</p>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+const titleVisible = ref(false);
+const descriptionVisible = ref(false);
+const hero = ref<HTMLElement | null>(null);
+const title = ref<HTMLElement | null>(null);
+const description = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  const observerOptions = { threshold: 0.1 };
+
+  const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        if (entry.target === title.value) {
+          titleVisible.value = true;
+        } else if (entry.target === description.value) {
+          descriptionVisible.value = true;
+        }
+      } else {
+        if (entry.target === title.value) {
+          titleVisible.value = false;
+        } else if (entry.target === description.value) {
+          descriptionVisible.value = false;
+        }
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+  if (title.value) observer.observe(title.value);
+  if (description.value) observer.observe(description.value);
+});
+</script>
 
 <style scoped lang="scss">
 .hero {
@@ -22,18 +59,33 @@
   text-align: center;
   position: relative;
   margin-bottom: 20px;
+
   .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    h1, p {
+      opacity: 0; 
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    h1.active, p.active {
+      opacity: 1; 
+      transform: translateY(0);
+      transition-duration: 3s;
+    }
+
     h1 {
-      font-size: 80px;
+      font-size: 100px;
       letter-spacing: 10px;
       margin-bottom: 30px;
     }
+
     p {
-      font-size: 36px;
+      font-size: 48px; /* 增大字体 */
       letter-spacing: 1px;
     }
   }
@@ -42,7 +94,7 @@
 .hero::before {
   content: '';
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7); /* 设置背景透明度 */
   top: 0;
   left: 0;
   width: 100%;
