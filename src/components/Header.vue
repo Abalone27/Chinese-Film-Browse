@@ -20,6 +20,14 @@
         />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
       </div>
+      <!-- <div class="auth-buttons">
+        <router-link to="/login">
+          <button class="login-btn">登录</button>
+        </router-link>
+        <router-link to="/register">
+          <button class="register-btn">注册</button>
+        </router-link>
+      </div> -->
       <div class="btn">
         <button @click="handleSwitchMode">切换模式</button>
       </div>

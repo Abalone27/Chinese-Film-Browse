@@ -15,7 +15,8 @@ import Former from './views/Former.vue';
 import Latest from './views/Latest.vue';
 import Search from './views/Search.vue';
 import Coming from './views/Coming.vue';
-
+import Register from './views/Register.vue';
+import Login from './views/Login.vue';
 
 const app = createApp(App);
 const router = createRouter({
@@ -24,7 +25,9 @@ const router = createRouter({
         { path: '/', component: Latest },
         { path: "/former", component: Former },
         { path: '/search', component: Search},
-        { path: '/coming', component: Coming}
+        { path: '/coming', component: Coming},
+        { path: "/register", component: Register },
+        { path: "/login", component: Login }
     ],
 });
 
