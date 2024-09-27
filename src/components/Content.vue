@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,watchEffect} from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
 
@@ -23,6 +23,10 @@ const { isNightMode } = storeToRefs(modeStore);
 const modeClass = ref("");
 const sectionVisible = ref(false);
 const section = ref<HTMLElement | null>(null);
+
+watchEffect(()=>{
+  modeClass.value=isNightMode.value?"night":""
+})
 
 onMounted(() => {
   const observerOptions = { threshold: 0.1 };
@@ -41,10 +45,11 @@ onMounted(() => {
 
 <style scoped lang="scss">
 section.container {
-  height: 100vh;
+  height: 100%;
   background-color: transparent;
   max-width: 80%;
   margin: 0 auto;
+  margin-bottom: 10px;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -74,6 +79,7 @@ section.container {
     font-size: 1.8rem; // 减小字体大小
     letter-spacing: 0.5px; // 调整字母间距
     overflow-wrap: break-word; // 确保长单词换行
+    margin-bottom: 80px;
   }
 }
 

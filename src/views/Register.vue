@@ -1,5 +1,5 @@
 <template>
-    <div class="register-page">
+    <div class="register-page" :class="mode">
       <div class="form-container">
         <h2>注册</h2>
         <form @submit.prevent="register">
@@ -16,11 +16,21 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref,watchEffect } from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useModeStore } from '@/stores/modeStores';
   
   const username = ref('');
   const password = ref('');
   const confirmPassword = ref('');
+
+  const modeStore = useModeStore();
+  const { isNightMode } = storeToRefs(modeStore);
+  const mode = ref("");
+
+  watchEffect(() => {
+    mode.value = isNightMode.value ? "night" : "";
+  });
   
   function register() {
     if (password.value !== confirmPassword.value) {
@@ -44,13 +54,29 @@
   }
   </script>
   
-  <style scoped>
+  <style scoped lang="scss">
   .register-page {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
+  }
+  .register-page.night {
+    background-color: var(--night-bg-color);
+    .form-container {
+      background-color: #333;
+      h2,form,input {
+        color: #dedede;
+      }
+      label {
+        color: #dedede;
+      }
+      input {
+        background-color: #555;
+        border-style: none;
+      }
+    }
   }
   
   .form-container {
@@ -74,7 +100,7 @@
   
   input {
     width: 100%;
-    padding: 10px;
+    padding: 4px 12px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -83,6 +109,7 @@
   .submit-btn {
     width: 100%;
     padding: 10px;
+    margin: 10px 0;
     background-color: #28a745;
     color: #fff;
     border: none;

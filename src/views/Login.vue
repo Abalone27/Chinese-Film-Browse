@@ -1,5 +1,5 @@
 <template>
-    <div class="login-page">
+    <div class="login-page" :class="mode">
       <div class="form-container">
         <h2>登录</h2>
         <form @submit.prevent="login">
@@ -14,10 +14,20 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import { ref,watchEffect } from 'vue';
+  import { storeToRefs } from 'pinia';
+  import { useModeStore } from '@/stores/modeStores';
   
   const username = ref('');
   const password = ref('');
+
+  const modeStore = useModeStore();
+  const { isNightMode } = storeToRefs(modeStore);
+  const mode = ref("");
+
+  watchEffect(() => {
+    mode.value = isNightMode.value ? "night" : "";
+  });
   
   function login() {
     fetch('/api/login', {
@@ -44,6 +54,22 @@
     height: 100vh;
     background-color: #f0f0f0;
   }
+  .login-page.night {
+    background-color: var(--night-bg-color);
+    .form-container {
+      background-color: #333;
+      h2,form,input {
+        color: #dedede;
+      }
+      label {
+        color: #dedede;
+      }
+      input {
+        background-color: #555;
+        border-style: none;
+      }
+    }
+  }
   
   .form-container {
     background-color: #fff;
@@ -66,7 +92,7 @@
   
   input {
     width: 100%;
-    padding: 10px;
+    padding: 4px 12px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -75,6 +101,7 @@
   .submit-btn {
     width: 100%;
     padding: 10px;
+    margin: 10px 0;
     background-color: #007bff;
     color: #fff;
     border: none;

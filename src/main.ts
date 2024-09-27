@@ -26,8 +26,8 @@ const router = createRouter({
         { path: "/former", component: Former },
         { path: '/search', component: Search},
         { path: '/coming', component: Coming},
-        { path: "/register", component: Register },
-        { path: "/login", component: Login }
+        { path: "/register", component: Register},
+        { path: "/login", component: Login}
     ],
 });
 

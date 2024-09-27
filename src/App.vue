@@ -1,20 +1,35 @@
 <template>
   <div class="container">
-    <film-header></film-header>
-    <section :class="mode">
-      <hero></hero>
-      <content></content>
+    <!-- 根据路由meta信息，动态显示布局或者仅显示页面内容 -->
+    <div v-if="!isAuthPage">
+      <film-header></film-header>
+      <section :class="mode">
+        <hero></hero>
+        <content></content>
+        <router-view></router-view>
+      </section>
+    </div>
+    
+    <!-- 如果是登录或注册页面，仅显示内容 -->
+    <div v-else>
       <router-view></router-view>
-    </section>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, provide, watchEffect } from 'vue';
+import { ref, onMounted, provide, watchEffect, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from './stores/modeStores';
 
 const modeStore = useModeStore()
+const route=useRoute()
+
+// 检查当前路由是否是登录或注册页面
+const isAuthPage = computed(() => {
+  return route.path === '/login' || route.path === '/register';
+});
 
 const { isNightMode } = storeToRefs(modeStore)
 
@@ -31,7 +46,6 @@ interface Details {
 }
 
 const API = 'https://apis.netstart.cn/maoyan/index/topRatedMovies';
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
 
 const movies = ref<Movie[]>([]);
 
