@@ -59,7 +59,7 @@ const router = useRouter();
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();
-  if (searchTerm=="") {
+  if (searchTerm === "") {
     alert('请输入搜索关键词');
     return;
   }
@@ -85,6 +85,7 @@ nav {
   transition: all 0.3s ease-in-out;
 
   a {
+    width: 100px;
     color: #fff;
     text-decoration: none;
     padding: 7px 15px;
@@ -103,6 +104,7 @@ nav {
     transition: all ease-in-out 0.4s;
 
     .logo {
+      width: 250px;
       display: flex;
       align-items: center;
       padding: 15px;
@@ -122,25 +124,30 @@ nav {
       justify-content: center;
       align-items: center;
       list-style-type: none;
-      margin: 0 auto;
-      padding: 7px 15px;
+      margin: 0;
+      padding: 0;
+
+      li {
+        width: 130px;
+        margin: 0 20px;
+      }
     }
 
     .search-container {
       display: flex;
       align-items: center;
-      margin-left: 60px;
+      margin-left: 50px;
 
       .search-input {
         background-color: rgba(64, 64, 64, 0.3);
-        color: #fff;
+        color: black;
         margin-right: 8px;
-        width: 70%;
+        width: 200px;
         transition: transform 0.3s ease;
         font-size: 1.25rem;
         padding: 4px 8px;
         border-radius: 3px;
-        border-color: rgba(0,0,0,0.3);
+        border: 1px solid rgba(0, 0, 0, 0.3);
       }
 
       .search-input:focus {
@@ -166,9 +173,12 @@ nav {
   }
 }
 
+.auth-buttons button {
+  margin-left: 200px;
+}
+
 .btn {
-  padding: 7px 15px;
-  margin: 10px;
+  margin-left: 10px;
 }
 
 nav.active {

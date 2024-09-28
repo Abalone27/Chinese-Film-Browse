@@ -1,5 +1,5 @@
 <template>
-  <div class="container" :class="modeClass" @click="handleSelectMovie">
+  <div class="container" :class="modeClass" @click="ShowDetails(movie.id)">
     <img :src="movie.poster" :alt="movie.name" />
     <div class="movie-info">
       <h3>{{ movie.name }}</h3>
@@ -7,13 +7,16 @@
         {{ movie.score === '' ? '暂无评分' : movie.score }}
       </span>
     </div>
+    <div class="details">
+      <h3>details</h3>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watchEffect } from 'vue';
+import { inject, ref, Ref, onMounted, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useModeStore } from '@/stores/modeStores';
+import { useModeStore } from '../stores/modeStores';
 
 interface Movie {
   id: number;
@@ -21,14 +24,19 @@ interface Movie {
   poster: string;
   score: string;
 }
+interface Details {
+  title: String | null;
+  brief: String | null;
+  isActive: Boolean;
+}
 
-// 定义 emits
 const emit = defineEmits(['select']);
-
-// 获取夜晚模式的状态
+const details = inject('details') as Ref<Details>;
 const modeStore = useModeStore();
-const { isNightMode } = storeToRefs(modeStore);
+const { isNightMode } = storeToRefs(modeStore); 
+
 const modeClass = ref('');
+
 watchEffect(() => {
   modeClass.value = isNightMode.value ? 'night' : '';
 });
@@ -49,10 +57,31 @@ function getClassByRate(score: number) {
 const props = defineProps<{ movie: Movie; infoApi: string }>();
 const ratingColor = ref(getClassByRate(Number(props.movie.score) || 0));
 
-function handleSelectMovie() {
-  console.log("Selected movie:", props.movie);
-  emit('select', props.movie);
+async function ShowDetails(movieId: number) {
+  const response = await fetch(props.infoApi + '?movieId=' + movieId);
+  const data = await response.json();
+  const message = data.$share.wechat.message;
+  details.value = {
+    title: message.title,
+    brief: message.desc,
+    isActive: true,
+  };
 }
+
+onMounted(() => {
+  const containers = document.querySelectorAll('.container');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in'); // 添加淡入效果类
+      } else {
+        entry.target.classList.remove('fade-in'); // 移除淡入效果类
+      }
+    });
+  });
+
+  containers.forEach(container => observer.observe(container));
+});
 </script>
 
 <style scoped lang="scss">
@@ -70,8 +99,13 @@ function handleSelectMovie() {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   box-shadow: 4px 5px 10px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s ease;
-  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.5s ease,transform 0.5s ease;
+
+  &.fade-in {
+    opacity: 1; // 淡入效果
+  }
 
   &:hover {
     cursor: pointer;
@@ -95,6 +129,9 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
+  white-space: nowrap; // 强制单行显示
+  text-overflow: ellipsis; // 省略号效果
 
   h3 {
     font-size: 1.5rem;
@@ -112,5 +149,9 @@ img {
     overflow: hidden;
     text-overflow: ellipsis; 
   }
+}
+.details {
+  position: absolute;
+  display: none;
 }
 </style>

@@ -106,7 +106,7 @@ onMounted(() => {
   border-radius: 10px;
   box-shadow: 4px 5px 10px rgba(0, 0, 0, 0.4);
   opacity: 0;
-  transition: opacity 1.5s ease, transform 0.5s ease;
+  transition: opacity 1.5s ease, transform 1s ease;
 
   &.fade-in {
     opacity: 1;
