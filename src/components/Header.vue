@@ -10,15 +10,14 @@
         <li><router-link to="/coming">即将推出</router-link></li>
       </ul>
       <div class="search-container">
-        <input 
-          type="text" 
-          v-model="keyword" 
-          @keydown.enter="searchMovies" 
-          @click="handleInputClick" 
-          placeholder="请输入关键词" 
-          class="search-input"
-        />
+        <input type="text" v-model="keyword" @keydown.enter="searchMovies" @input="fetchSuggestions"
+          placeholder="请输入关键词" class="search-input" />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
+        <ul v-if="suggestions.length" class="suggestions">
+          <li v-for="suggestion in suggestions" :key="suggestion" @click="selectSuggestion(suggestion)">
+            {{ suggestion }}
+          </li>
+        </ul>
       </div>
       <div class="auth-buttons">
         <router-link to="/login">
@@ -55,7 +54,35 @@ function handleSwitchMode() {
 }
 
 const keyword = ref('');
+const suggestions = ref([]);
 const router = useRouter();
+
+async function fetchSuggestions() {
+  if (keyword.value.trim() === "") {
+    suggestions.value = [];
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://apis.netstart.cn/maoyan/search/suggest?kw=${encodeURIComponent(keyword.value)}`);
+    const data = await response.json();
+
+    // 确认响应中是否有 suggestions 字段
+    if (data.success) {
+      suggestions.value = data.movies.list.map((movie: { nm: any; }) => movie.nm); // 获取电影名称
+    } else {
+      suggestions.value = []; // 如果没有成功，清空建议
+    }
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    suggestions.value = []; // 请求失败时清空建议
+  }
+}
+
+function selectSuggestion(suggestion: string) {
+  keyword.value = suggestion;
+  searchMovies();
+}
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();
@@ -65,10 +92,7 @@ async function searchMovies() {
   }
   router.push({ path: '/search', query: { keyword: searchTerm } });
   keyword.value = '';
-}
-
-function handleInputClick() {
-  keyword.value = '';
+  suggestions.value = [];
 }
 </script>
 
@@ -134,37 +158,75 @@ nav {
     }
 
     .search-container {
-      display: flex;
-      align-items: center;
-      margin-left: 50px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 50px;
+  margin-right: 20px;
+}
 
-      .search-input {
-        background-color: rgba(64, 64, 64, 0.3);
-        color: black;
-        margin-right: 8px;
-        width: 200px;
-        transition: transform 0.3s ease;
-        font-size: 1.25rem;
-        padding: 4px 8px;
-        border-radius: 3px;
-        border: 1px solid rgba(0, 0, 0, 0.3);
-      }
+.search-input {
+  background-color: rgba(64, 64, 64, 0.3);
+  color: black;
+  margin-right: 8px;
+  width: 200px;
+  transition: transform 0.5s ease;
+  font-size: 1.25rem;
+  padding: 4px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
 
-      .search-input:focus {
-        transform: scale(1.05);
-      }
+  &:focus {
+    transform: scale(1.05);
+  }
+}
 
-      .search-icon {
-        cursor: pointer;
-        width: 24px;
-        height: 24px;
-        transition: transform 0.3s ease;
-      }
+.search-icon {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.5s ease;
 
-      .search-icon:hover {
-        transform: scale(1.2);
-      }
-    }
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+
+.suggestions {
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  padding-left: 0px;
+}
+
+.suggestions li {
+  width: 100%;
+  padding: 8px 0;
+  padding-left: 10px;
+  margin-left: 0px;
+  margin-right: 0px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+
+  transition: transform 0.5s ease;
+
+&:hover {
+  transform: scale(1.05);
+}
+}
+
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
+}
 
     button {
       color: #fff;
@@ -199,6 +261,7 @@ nav.active {
 
   .container {
     padding: 5px 0;
+
     .search-input {
       background-color: #fff;
     }

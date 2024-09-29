@@ -97,11 +97,11 @@ onMounted(() => {
   border-radius: 10px;
   box-shadow: 4px 5px 10px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  transform: translateY(50px); // 初始位置在下方
-  transition: transform 2s ease; // 过渡效果
+  transform: translateY(50px);
+  transition: transform 2s ease;
 
   &.pop-in {
-    transform: translateY(0); // 弹入效果
+    transform: translateY(0);
   }
 
   &:hover {
