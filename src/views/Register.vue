@@ -16,9 +16,12 @@
   </template>
   
   <script setup>
-  import { ref,watchEffect } from 'vue';
+  import { onMounted, ref,watchEffect } from 'vue';
   import { storeToRefs } from 'pinia';
   import { useModeStore } from '@/stores/modeStores';
+  import { useRouter } from 'vue-router';
+
+  const router = useRouter();
   
   const username = ref('');
   const password = ref('');
@@ -27,6 +30,12 @@
   const modeStore = useModeStore();
   const { isNightMode } = storeToRefs(modeStore);
   const mode = ref("");
+
+  const backend_url = 'http://localhost:3000'
+
+  onMounted(()=>{
+    window.scrollTo(0,0)
+  })
 
   watchEffect(() => {
     mode.value = isNightMode.value ? "night" : "";
@@ -38,7 +47,7 @@
       return;
     }
   
-    fetch('/api/register', {
+    fetch(`${backend_url}/api/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username.value, password: password.value }),
@@ -47,6 +56,7 @@
       .then((data) => {
         if (data.success) {
           alert('注册成功');
+          router.push('/login');
         } else {
           alert(data.message);
         }

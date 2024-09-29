@@ -11,12 +11,12 @@ import Hero from '@/components/Hero.vue';
 import Content from '@/components/Content.vue';
 import FilmBoard from '@/components/FilmBoard.vue';
 import FilmInfo from '@/components/FilmInfo.vue';
-import Former from './views/Former.vue';
-import Latest from './views/Latest.vue';
-import Search from './views/Search.vue';
-import Coming from './views/Coming.vue';
-import Register from './views/Register.vue';
-import Login from './views/Login.vue';
+import Former from '@/views/Former.vue';
+import Latest from '@/views/Latest.vue';
+import Search from '@/views/Search.vue';
+import Coming from '@/views/Coming.vue';
+import Register from '@/views/Register.vue'
+import Login from '@/views/Login.vue';
 
 const app = createApp(App);
 const router = createRouter({

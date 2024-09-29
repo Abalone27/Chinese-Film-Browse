@@ -14,31 +14,54 @@
   </template>
   
   <script setup>
-  import { ref,watchEffect } from 'vue';
+  import { onMounted,ref,watchEffect } from 'vue';
   import { storeToRefs } from 'pinia';
   import { useModeStore } from '@/stores/modeStores';
+  import { useUserStore } from '@/stores/userStore';
+  import { useRouter } from 'vue-router';
+
+  const router = useRouter();
   
   const username = ref('');
   const password = ref('');
+  const display = ref('登陆')
 
   const modeStore = useModeStore();
   const { isNightMode } = storeToRefs(modeStore);
   const mode = ref("");
+  const userStore = useUserStore()
+
+  const backend_url = 'http://localhost:3000'
+
+  onMounted(()=>{
+    window.scrollTo(0,0)
+  })
 
   watchEffect(() => {
     mode.value = isNightMode.value ? "night" : "";
   });
   
   function login() {
-    fetch('/api/login', {
+    const token = localStorage.getItem('token')
+
+    fetch(`${backend_url}/api/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
       body: JSON.stringify({ username: username.value, password: password.value }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
           alert('登录成功');
+          console.log('用户数据: ',data)
+          // 保存 token 到本地存储
+          localStorage.setItem('token', data.token);
+          // 将用户名保存到 Pinia store 中
+          userStore.setUsername(username.value);
+          router.push('/');
         } else {
           alert(data.message);
         }

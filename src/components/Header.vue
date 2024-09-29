@@ -20,13 +20,17 @@
         />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
       </div>
-      <div class="auth-buttons">
+      <div class="auth-buttons" v-if="!username">
         <router-link to="/login">
           <button class="login-btn">登录</button>
         </router-link>
         <router-link to="/register">
           <button class="register-btn">注册</button>
         </router-link>
+      </div>
+      <div v-else class="user-info">
+        <span>欢迎，{{ username }}</span>
+        <button @click="logout" class="logout-btn">注销</button>
       </div>
       <div class="btn">
         <button @click="handleSwitchMode">切换模式</button>
@@ -39,11 +43,14 @@
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useModeStore } from '../stores/modeStores';
+import { useModeStore } from '@/stores/modeStores';
+import { useUserStore } from '@/stores/userStore';
 
 const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
 const { toggleMode } = modeStore;
+const userStore = useUserStore()
+const {username} = storeToRefs(userStore) 
 
 const mode = ref('');
 watchEffect(() => {
@@ -69,6 +76,13 @@ async function searchMovies() {
 
 function handleInputClick() {
   keyword.value = '';
+}
+
+// 注销功能：清除用户信息并返回登录页面
+function logout() {
+  userStore.clearUsername();  // 清除用户名
+  localStorage.removeItem('token');  // 清除 token
+  router.push('/');
 }
 </script>
 
@@ -156,6 +170,35 @@ nav {
 
       .search-icon:hover {
         transform: scale(1.2);
+      }
+    }
+
+    .auth-buttons {
+      display: flex;
+
+      button {
+        margin-left: 10px;
+      }
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+
+      span {
+        margin-right: 15px;
+      }
+
+      .logout-btn {
+        color: white;
+        border: none;
+        padding: 7px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .logout-btn:hover {
+        background-color: #d43f3a;
       }
     }
 

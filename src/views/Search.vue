@@ -19,16 +19,23 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { LocationQueryValue, useRoute } from 'vue-router';
 import FilmBoardSearch from '@/components/FilmBoard_Search.vue';
 
 const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
 
 const route = useRoute();
 const keyword = ref(route.query.keyword || '');
-const movies = ref([]);
+const movies = ref<Movie[]>([]);
 const error = ref('');
-const selectedMovie = ref(null);
+const selectedMovie = ref<{ title: string; description: string; isActive: boolean } | null>(null);
+
+interface Movie {
+  id: number;
+  name: string;
+  poster: string;
+  score: string;
+}
 
 // 获取电影列表
 async function fetchMovies() {
@@ -39,13 +46,12 @@ async function fetchMovies() {
     const data = await response.json();
     movies.value = data;
   } catch (error) {
-    console.error('Failed to fetch movies:', error);
-    error.value = '无法加载电影数据';
+    console.error('Failed to fetch movies');
   }
 }
 
 // 获取电影详情
-async function fetchMovieDetails(movieId) {
+async function fetchMovieDetails(movieId : string) {
   if (!movieId) {
     console.error("Movie ID is undefined");
     return;
@@ -62,16 +68,16 @@ async function fetchMovieDetails(movieId) {
       title: data.$title,
       description: data.$description,
       isActive: true,
-    };
+    }
   } catch (error) {
     console.error('Failed to fetch movie details:', error);
   }
 }
 
 // 当选择电影时，调用 fetchMovieDetails 并传递 id
-function selectMovie(movie) {
+function selectMovie(movie:Movie) {
   if (movie.id) {
-    fetchMovieDetails(movie.id);
+    fetchMovieDetails(movie.id.toString());
   } else {
     console.error("Movie ID is undefined");
   }
@@ -81,7 +87,7 @@ onMounted(fetchMovies);
 watch(
   () => route.query.keyword,
   (newKeyword) => {
-    keyword.value = newKeyword;
+    keyword.value = newKeyword as string | LocationQueryValue[];
     fetchMovies();
   },
   { immediate: true }
