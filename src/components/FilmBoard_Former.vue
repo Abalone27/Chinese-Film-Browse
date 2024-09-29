@@ -77,9 +77,9 @@ onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('fade-in'); // 添加淡入效果类
+        entry.target.classList.add('pop-in'); // 添加弹入效果类
       } else {
-        entry.target.classList.remove('fade-in'); // 移除淡入效果类
+        entry.target.classList.remove('pop-in'); // 移除弹入效果类
       }
     });
   });
@@ -103,11 +103,12 @@ onMounted(() => {
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   box-shadow: 4px 5px 10px rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transition: opacity 1.5s ease, transform 0.5s ease;
+  overflow: hidden;
+  transform: translateY(50px);
+  transition: transform 2s ease;
 
-  &.fade-in {
-    opacity: 1;
+  &.pop-in {
+    transform: translateY(0);
   }
 
   &:hover {
