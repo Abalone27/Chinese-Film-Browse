@@ -31,7 +31,6 @@
   const mode = ref("");
   const userStore = useUserStore()
 
-  const backend_url = 'http://localhost:3000'
 
   onMounted(()=>{
     window.scrollTo(0,0)
@@ -44,12 +43,12 @@
   function login() {
     const token = localStorage.getItem('token')
 
-    fetch(`${backend_url}/api/login`, {
+    fetch(`/db/login`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
        },
+      credentials: 'include',  // 允许发送 cookie 进行会话管理
       body: JSON.stringify({ username: username.value, password: password.value }),
     })
       .then((response) => response.json())

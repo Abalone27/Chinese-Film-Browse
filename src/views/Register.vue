@@ -31,7 +31,6 @@
   const { isNightMode } = storeToRefs(modeStore);
   const mode = ref("");
 
-  const backend_url = 'http://localhost:3000'
 
   onMounted(()=>{
     window.scrollTo(0,0)
@@ -47,7 +46,7 @@
       return;
     }
   
-    fetch(`${backend_url}/api/register`, {
+    fetch(`/db/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username.value, password: password.value }),
