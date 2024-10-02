@@ -13,11 +13,6 @@
         <input type="text" v-model="keyword" @keydown.enter="searchMovies"
           placeholder="请输入关键词" class="search-input" />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
-        <!-- <ul v-if="suggestions.length" class="suggestions">
-          <li v-for="suggestion in suggestions" :key="suggestion" @click="selectSuggestion(suggestion)">
-            {{ suggestion }}
-          </li>
-        </ul> -->
       </div>
       <div class="auth-buttons" v-if="!username">
         <router-link to="/login">
@@ -61,7 +56,6 @@ function handleSwitchMode() {
 }
 
 const keyword = ref('');
-const suggestions = ref([]);
 const router = useRouter();
 
 // async function fetchSuggestions() {
@@ -93,13 +87,16 @@ const router = useRouter();
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();
-  if (searchTerm === "") {
+  if (searchTerm=="") {
     alert('请输入搜索关键词');
     return;
   }
   router.push({ path: '/search', query: { keyword: searchTerm } });
   keyword.value = '';
-  suggestions.value = [];
+}
+
+function handleInputClick() {
+  keyword.value = '';
 }
 
 // 注销功能：清除用户信息并返回登录页面
@@ -123,7 +120,6 @@ nav {
   transition: all 0.3s ease-in-out;
 
   a {
-    width: 100px;
     color: #fff;
     text-decoration: none;
     padding: 7px 15px;
@@ -142,7 +138,6 @@ nav {
     transition: all ease-in-out 0.4s;
 
     .logo {
-      width: 250px;
       display: flex;
       align-items: center;
       padding: 15px;
@@ -162,85 +157,42 @@ nav {
       justify-content: center;
       align-items: center;
       list-style-type: none;
-      margin: 0;
-      padding: 0;
-
-      li {
-        width: 130px;
-        margin: 0 20px;
-      }
+      margin: 0 auto;
+      padding: 7px 15px;
     }
 
     .search-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-left: 50px;
-  margin-right: 20px;
-}
+      display: flex;
+      align-items: center;
+      margin-left: 60px;
 
-.search-input {
-  background-color: rgba(64, 64, 64, 0.3);
-  color: black;
-  margin-right: 8px;
-  width: 200px;
-  transition: transform 0.5s ease;
-  font-size: 1.25rem;
-  padding: 4px 8px;
-  border-radius: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+      .search-input {
+        background-color: rgba(64, 64, 64, 0.3);
+        color: #fff;
+        margin-right: 8px;
+        width: 70%;
+        transition: transform 0.3s ease;
+        font-size: 1.25rem;
+        padding: 4px 8px;
+        border-radius: 3px;
+        border-color: rgba(0,0,0,0.3);
+      }
 
-  &:focus {
-    transform: scale(1.05);
-  }
-}
+      .search-input:focus {
+        transform: scale(1.05);
+      }
 
-.search-icon {
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-  transition: transform 0.5s ease;
+      .search-icon {
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        transition: transform 0.3s ease;
+      }
 
-  &:hover {
-    transform: scale(1.2);
-  }
-}
-
-
-.suggestions {
-  flex-direction: column;
-  position: absolute;
-  top: 100%;
-  width: 100%;
-  background: white;
-  border: 1px solid #ccc;
-  padding-left: 0px;
-}
-
-.suggestions li {
-  width: 100%;
-  padding: 8px 0;
-  padding-left: 10px;
-  margin-left: 0px;
-  margin-right: 0px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 15px;
-
-  transition: transform 0.5s ease;
-
-&:hover {
-  transform: scale(1.05);
-}
-}
-
-
-.suggestions li:hover {
-  background-color: #f0f0f0;
-}
+      .search-icon:hover {
+        transform: scale(1.2);
+      }
+    }
 
     .auth-buttons {
       display: flex;
@@ -253,6 +205,8 @@ nav {
     .user-info {
       display: flex;
       align-items: center;
+      color: #dad9d9;
+      cursor: default;
 
       span {
         margin-right: 15px;
@@ -278,12 +232,9 @@ nav {
   }
 }
 
-.auth-buttons button {
-  margin-left: 200px;
-}
-
 .btn {
-  margin-left: 10px;
+  padding: 7px 15px;
+  margin: 10px;
 }
 
 nav.active {
@@ -304,9 +255,15 @@ nav.active {
 
   .container {
     padding: 5px 0;
-
     .search-input {
       background-color: #fff;
+      color: #222;
+    }
+    .user-info {
+      color: #222;
+    }
+    .logout-btn {
+      color: #222;
     }
   }
 
