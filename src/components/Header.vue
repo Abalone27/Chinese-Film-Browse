@@ -10,14 +10,14 @@
         <li><router-link to="/coming">即将推出</router-link></li>
       </ul>
       <div class="search-container">
-        <input type="text" v-model="keyword" @keydown.enter="searchMovies" @input="fetchSuggestions"
+        <input type="text" v-model="keyword" @keydown.enter="searchMovies"
           placeholder="请输入关键词" class="search-input" />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
-        <ul v-if="suggestions.length" class="suggestions">
+        <!-- <ul v-if="suggestions.length" class="suggestions">
           <li v-for="suggestion in suggestions" :key="suggestion" @click="selectSuggestion(suggestion)">
             {{ suggestion }}
           </li>
-        </ul>
+        </ul> -->
       </div>
       <div class="auth-buttons" v-if="!username">
         <router-link to="/login">
@@ -64,32 +64,32 @@ const keyword = ref('');
 const suggestions = ref([]);
 const router = useRouter();
 
-async function fetchSuggestions() {
-  if (keyword.value.trim() === "") {
-    suggestions.value = [];
-    return;
-  }
+// async function fetchSuggestions() {
+//   if (keyword.value.trim() === "") {
+//     suggestions.value = [];
+//     return;
+//   }
 
-  try {
-    const response = await fetch(`https://apis.netstart.cn/maoyan/search/suggest?kw=${encodeURIComponent(keyword.value)}`);
-    const data = await response.json();
+//   try {
+//     const response = await fetch(`https://apis.netstart.cn/maoyan/search/suggest?kw=${encodeURIComponent(keyword.value)}`);
+//     const data = await response.json();
 
-    // 确认响应中是否有 suggestions 字段
-    if (data.success) {
-      suggestions.value = data.movies.list.map((movie: { nm: any; }) => movie.nm); // 获取电影名称
-    } else {
-      suggestions.value = []; // 如果没有成功，清空建议
-    }
-  } catch (error) {
-    console.error('Error fetching suggestions:', error);
-    suggestions.value = []; // 请求失败时清空建议
-  }
-}
+//     // 确认响应中是否有 suggestions 字段
+//     if (data.success) {
+//       suggestions.value = data.movies.list.map((movie: { nm: any; }) => movie.nm); // 获取电影名称
+//     } else {
+//       suggestions.value = []; // 如果没有成功，清空建议
+//     }
+//   } catch (error) {
+//     console.error('Error fetching suggestions:', error);
+//     suggestions.value = []; // 请求失败时清空建议
+//   }
+// }
 
-function selectSuggestion(suggestion: string) {
-  keyword.value = suggestion;
-  searchMovies();
-}
+// function selectSuggestion(suggestion: string) {
+//   keyword.value = suggestion;
+//   searchMovies();
+// }
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();

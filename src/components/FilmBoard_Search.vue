@@ -1,11 +1,12 @@
 <template>
   <div class="container" :class="modeClass" @click="ShowDetails(movie.id)">
-    <img :src="movie.poster" :alt="movie.name" />
+    <img :src="movie.img" :alt="movie.nm" />
     <div class="movie-info">
-      <h3>{{ movie.name }}</h3>
+      <h3>{{ movie.nm }}</h3>
       <span class="rating" :style="{ color: ratingColor }">
-        {{ movie.score === '' ? '暂无评分' : movie.score }}
+        {{ movie.sc === '' || Number(movie.sc) === 0 ? '暂无评分' : movie.sc }}
       </span>
+
     </div>
     <div class="details">
       <h3>details</h3>
@@ -20,9 +21,9 @@ import { useModeStore } from '../stores/modeStores';
 
 interface Movie {
   id: number;
-  name: string;
-  poster: string;
-  score: string;
+  img: string;
+  nm: string;
+  sc: string;
 }
 interface Details {
   title: String | null;
@@ -33,7 +34,7 @@ interface Details {
 const emit = defineEmits(['select']);
 const details = inject('details') as Ref<Details>;
 const modeStore = useModeStore();
-const { isNightMode } = storeToRefs(modeStore); 
+const { isNightMode } = storeToRefs(modeStore);
 
 const modeClass = ref('');
 
@@ -55,15 +56,15 @@ function getClassByRate(score: number) {
 }
 
 const props = defineProps<{ movie: Movie; infoApi: string }>();
-const ratingColor = ref(getClassByRate(Number(props.movie.score) || 0));
+const ratingColor = ref(getClassByRate(Number(props.movie.sc) || 0));
 
 async function ShowDetails(movieId: number) {
   const response = await fetch(props.infoApi + '?movieId=' + movieId);
   const data = await response.json();
-  const message = data.$share.wechat.message;
+  const message = data.detailMovie; // 更新以访问 detailMovie
   details.value = {
-    title: message.title,
-    brief: message.desc,
+    title: message.nm,
+    brief: message.dra,
     isActive: true,
   };
 }
@@ -118,6 +119,7 @@ onMounted(() => {
 .container.night {
   background-color: var(--night-color);
 }
+
 img {
   width: 100%;
   height: 400px;
@@ -148,9 +150,10 @@ img {
     margin-right: 10px;
     max-width: 70%;
     overflow: hidden;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
   }
 }
+
 .details {
   position: absolute;
   display: none;

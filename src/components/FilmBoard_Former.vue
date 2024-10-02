@@ -1,9 +1,9 @@
 <template>
-  <div class="container" :class="['fade', modeClass]" @click="ShowDetails(movie.movieId)">
-      <img :src="movie.poster" :alt="movie.movieInfo.title" />
+  <div class="container" :class="['fade', modeClass]" @click="ShowDetails(movie.id)">
+      <img :src="movie.img" :alt="movie.nm" />
       <div class="movie-info">
-          <h3 class="title">{{ movie.movieInfo.title }}</h3>
-          <span class="rating" :style="{ color: ratingColor }">{{ movie.score == '' ? '暂无评分' : movie.score }}</span>
+          <h3 class="title">{{ movie.nm }}</h3>
+          <span class="rating" :style="{ color: ratingColor }">{{ movie.sc == '' ? '暂无评分' : movie.sc }}</span>
       </div>
       <div class="details">
           <h3>details</h3>
@@ -16,17 +16,11 @@ import { inject, ref, Ref, watchEffect, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
 
-interface MovieInfo {
-  title: string;
-  actors: string;
-  showInfo: string;
-}
-
 interface Movie {
-  movieId: number;
-  poster: string;
-  score: string;
-  movieInfo: MovieInfo;
+  id: number;
+  img: string;
+  nm: string;
+  sc: string;
 }
 
 interface Details {
@@ -58,16 +52,16 @@ function getClassByRate(vote: number) {
 }
 
 const props = defineProps<{ movie: Movie; infoApi: string }>();
-const ratingColor = getClassByRate(Number(props.movie.score));
+const ratingColor = getClassByRate(Number(props.movie.sc));
 
 async function ShowDetails(movieId: number) {
   const response = await fetch(props.infoApi + '?movieId=' + movieId);
   const data = await response.json();
-  const message = data.$share.wechat.message;
+  const message = data.detailMovie; // 更新以访问 detailMovie
   details.value = {
-      title: message.title,
-      brief: message.desc,
-      isActive: true,
+    title: message.nm,
+    brief: message.dra,
+    isActive: true,
   };
 }
 

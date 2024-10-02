@@ -2,7 +2,7 @@
   <section :class="mode">
     <h1>Classic movies...</h1>
     <ul class="movie">
-      <li v-for="movie in movies" :key="movie.movieId">
+      <li v-for="movie in movies" :key="movie.id">
         <film-board :movie="movie" :infoApi="Info_API"></film-board>
       </li>
     </ul>
@@ -16,17 +16,12 @@ import { storeToRefs } from 'pinia';
 import { useModeStore } from '@/stores/modeStores';
 import FilmBoard from '@/components/FilmBoard_Former.vue';
 
-interface MovieInfo {
-  title: string;
-  actors: string;
-  showInfo: string;
-}
 
 interface Movie {
-  movieId: number;
-  poster: string;
-  score: string;
-  movieInfo: MovieInfo;
+  id: number;
+  img: string;
+  nm: string;
+  sc: string;
 }
 
 const modeStore = useModeStore();
@@ -34,30 +29,26 @@ const { isNightMode } = storeToRefs(modeStore);
 const mode = ref("");
 
 // API 路径
-const API = 'https://apis.netstart.cn/maoyan/index/moreClassicList';
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
+const API = '/api/asgard/asgardapi/mmdb/movieboard/moviedetail/fixedboard/39.json?ci=1&year=0&term=0&limit=100&offset=0';
+const Info_API = '/api/ajax/detailmovie';
 
 // 定义电影列表
 const movies = ref<Movie[]>([]);
 
 // 获取往期经典电影数据
-async function GetClassicMovies() {
-  const response = await fetch(API);
-  const data = await response.json();
-  console.log(data);
-
-  // 处理返回的数据
-  movies.value = data.map((movie: any) => ({
-    movieId: Number(movie.movieId),
-    name: movie.movieInfo?.title || movie.name || '未知标题',
-    poster: movie.poster || '',
-    score: movie.score || '暂无评分',
-    movieInfo: {
-      title: movie.movieInfo?.title || '未知标题',
-      actors: movie.movieInfo?.actors || '未知演员',
-      showInfo: movie.movieInfo?.showInfo || '未知上映信息',
+async function GetClassicMovies(apiUrl: string) {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  }));
+    const data = await response.json();
+    // 打印返回的 API 数据
+    console.log("API 返回的数据:", data);
+    movies.value = data.data.movies;
+  } catch (error) {
+    console.error("获取电影数据失败:", error);
+  }
 }
 
 // 根据夜间模式调整样式
@@ -67,7 +58,7 @@ watchEffect(() => {
 
 // 组件挂载时获取数据
 onMounted(() => {
-  GetClassicMovies();
+  GetClassicMovies(API);
 });
 </script>
 

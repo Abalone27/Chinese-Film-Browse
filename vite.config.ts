@@ -10,4 +10,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://m.maoyan.com', // 目标 API 服务器
+        changeOrigin: true, // 是否改变源
+        rewrite: (path) => path.replace(/^\/api/, ''), // 重写路径
+      },
+    },
+  },
 })

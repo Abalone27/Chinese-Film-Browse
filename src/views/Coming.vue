@@ -22,28 +22,33 @@ const mode = ref("");
 
 interface Movie {
   id: number;
-  comingTitle: string;
-  img: string;
-  nm: string;
-  sc: string;
-  rt: string;
-  star: string;
-  showInfo: string;
-  wish: number;
+  nm: string; // 电影名称
+  img: string; // 图片链接
+  dir: string; // 导演
+  cat: string; // 分类
+  dur: number; // 时长
+  wish: number; // 期待人数
+  dra: string; // 简介
 }
 
-const API = 'https://apis.netstart.cn/maoyan/index/comingList';
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
+// 将 API URL 修改为通过代理路径
+const API = '/api/ajax/comingList?ci=10&token=&limit=20';
+const Info_API = '/api/ajax/detailmovie';
 
 const movies = ref<Movie[]>([]);
 
 async function GetInfo(apiUrl: string) {
   try {
     const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
+    // 打印返回的 API 数据
+    console.log("API 返回的数据:", data);
     movies.value = data.coming; 
   } catch (error) {
-    console.error("Failed to fetch movie data:", error);
+    console.error("获取电影数据失败:", error);
   }
 }
 

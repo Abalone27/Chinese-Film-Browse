@@ -1,15 +1,12 @@
 <template>
   <section :class="mode">
-    <h1>搜索结果：“{{keyword}}”</h1>
+    <h1>搜索结果：“{{ keyword }}”</h1>
     <ul class="movie">
       <li v-for="movie in movies" :key="movie.id">
-        <film-board 
-        :movie="movie" 
-        :infoApi="Info_API"
-        :key="movie.id"
-        ></film-board>
+        <film-board :movie="movie" :infoApi="Info_API" :key="movie.id"></film-board>
       </li>
     </ul>
+
     <film-info></film-info>
   </section>
 </template>
@@ -27,27 +24,29 @@ const mode = ref("");
 
 interface Movie {
   id: number;
-  name: string;
-  poster: string;
-  score: string;
+  img: string;
+  nm: string;
+  sc: string;
 }
 
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
+const Info_API = '/api/ajax/detailmovie';
 const route = useRoute();
 const keyword = ref(route.query.keyword || '');
 const movies = ref<Movie[]>([]);
 
 async function GetInfo() {
-  const searchAPI = `https://apis.netstart.cn/maoyan/search/movies?keyword=${keyword.value}&ci=1&offset=0&limit=20`;
+  const searchAPI = `/api/ajax/search?kw=${keyword.value}&cityId=1&stype=0&limits=20`;
   try {
     const response = await fetch(searchAPI);
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    movies.value = data;
+    // 确保提取到 movies.list
+    movies.value = data.movies.list || [];
   } catch (error) {
     console.error('Failed to fetch movies:', error);
   }
 }
+
 
 // 监测 keyword 变化，调用 GetInfo
 watch(

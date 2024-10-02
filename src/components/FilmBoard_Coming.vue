@@ -1,15 +1,16 @@
 <template>
   <div class="container" :class="['fade', modeClass]" @click="ShowDetails(movie.id)">
-    <img class="img" :src="movie.img" :alt="movie.comingTitle" />
+    <img class="img" :src="movie.img" :alt="movie.nm" />
     <div class="movie-info">
       <h3>{{ movie.nm }}</h3>
-      <span class="rating">
-        {{ movie.wish }}人期待
-      </span>
+      <span class="rating">{{ movie.wish }}人期待</span>
     </div>
     <div class="details">
-      <h3>{{ movie.comingTitle }}</h3>
-      <p>{{ movie.rt }}</p>
+      <h3>{{ movie.nm }}</h3>
+      <p>导演: {{ movie.dir }}</p>
+      <p>分类: {{ movie.cat }}</p>
+      <p>时长: {{ movie.dur }}分钟</p>
+      <p>简介: {{ movie.dra }}</p>
     </div>
   </div>
 </template>
@@ -21,14 +22,13 @@ import { useModeStore } from '../stores/modeStores';
 
 interface Movie {
   id: number;
-  comingTitle: string;
-  img: string;
-  nm: string;
-  sc: string;
-  rt: string;
-  star: string;
-  showInfo: string;
+  nm: string; 
+  img: string; 
+  dir: string;
+  cat: string;
+  dur: number;
   wish: number;
+  dra: string;
 }
 
 interface Details {
@@ -47,16 +47,15 @@ watchEffect(() => {
   modeClass.value = isNightMode.value ? "night" : "";
 });
 
-
 const props = defineProps<{ movie: Movie; infoApi: string }>();
 
 async function ShowDetails(movieId: number) {
   const response = await fetch(props.infoApi + '?movieId=' + movieId);
   const data = await response.json();
-  const message = data.$share.wechat.message;
+  const message = data.detailMovie; // 更新以访问 detailMovie
   details.value = {
-    title: message.title,
-    brief: message.desc,
+    title: message.nm,
+    brief: message.dra,
     isActive: true,
   };
 }
@@ -120,7 +119,6 @@ onMounted(() => {
   border-top-right-radius: 10px;
 }
 
-
 .movie-info {
   display: flex;
   justify-content: space-between;
@@ -146,9 +144,8 @@ onMounted(() => {
   }
 }
 
-
 .details {
   position: absolute;
-  display: none;
+  display: none; // 这里可以根据需求更改显示方式
 }
 </style>

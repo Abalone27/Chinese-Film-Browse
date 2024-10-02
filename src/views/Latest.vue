@@ -2,7 +2,7 @@
   <section :class="mode">
     <h1>Hit movies...</h1>
     <ul class="movie">
-      <li v-for="movie in movies" :key="movie.movieId">
+      <li v-for="movie in movies" :key="movie.id">
         <film-board :movie="movie" :infoApi="Info_API"></film-board>
       </li>
     </ul>
@@ -21,14 +21,14 @@ const { isNightMode } = storeToRefs(modeStore)
 const mode = ref("")
 
 interface Movie {
-  movieId: number;
-  name: string;
-  poster: string;
-  score: string;
+  id: number;
+  nm: string; 
+  img: string; 
+  sc: string;
 }
 
-const API = 'https://apis.netstart.cn/maoyan/index/topRatedMovies';
-const Info_API = 'https://apis.netstart.cn/maoyan/movie/detail';
+const API = '/api/ajax/movieOnInfoList';
+const Info_API = '/api/ajax/detailmovie';
 
 const movies = ref<Movie[]>([]);
 
