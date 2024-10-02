@@ -95,10 +95,6 @@ async function searchMovies() {
   keyword.value = '';
 }
 
-function handleInputClick() {
-  keyword.value = '';
-}
-
 // 注销功能：清除用户信息并返回登录页面
 function logout() {
   userStore.clearUsername();  // 清除用户名

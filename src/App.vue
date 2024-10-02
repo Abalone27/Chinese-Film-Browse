@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, provide, watchEffect, computed } from 'vue';
+import { ref, provide, watchEffect, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from './stores/modeStores';
@@ -33,21 +33,11 @@ const isAuthPage = computed(() => {
 
 const { isNightMode } = storeToRefs(modeStore)
 
-interface Movie {
-  movieId: number;
-  name: string;
-  poster: string;
-  score: string;
-}
 interface Details {
   title: String | null;
   brief: String | null;
   isActive: Boolean;
 }
-
-const API = 'https://apis.netstart.cn/maoyan/index/topRatedMovies';
-
-const movies = ref<Movie[]>([]);
 
 const mode = ref("")
 
@@ -58,18 +48,6 @@ const details = ref<Details>({
 });
 
 provide('details', details);
-
-async function GetInfo(API: string | URL | Request) {
-  const response = await fetch(API);
-  const data = await response.json();
-  console.log(data);
-
-  movies.value = data.movieList;
-}
-
-onMounted(() => {
-  GetInfo(API);
-});
 
 watchEffect(() => {
   mode.value = isNightMode.value ? "night" : ""
