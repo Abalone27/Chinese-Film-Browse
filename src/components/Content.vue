@@ -66,13 +66,13 @@ section.container {
   margin-bottom: 10px;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 1s ease, transform 1s ease;
   padding: 20px;
 
   &.active {
     opacity: 1;
     transform: translateY(0);
-    transition-duration: 2s;
+    transition-duration: 3s;
   }
 
   h2 {
