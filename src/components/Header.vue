@@ -10,9 +10,16 @@
         <li><router-link to="/coming">即将推出</router-link></li>
       </ul>
       <div class="search-container">
-        <input type="text" v-model="keyword" @keydown.enter="searchMovies"
+        <input type="text" v-model="keyword" @input="fetchSuggestions" @keydown.enter="searchMovies"
           placeholder="请输入关键词" class="search-input" />
         <img src="../assets/images/search.svg" alt="搜索" @click="searchMovies" class="search-icon" />
+
+        <!-- 添加显示建议列表 -->
+        <ul v-if="suggestions.length" class="suggestions-list">
+          <li v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)">
+            {{ suggestion }}
+          </li>
+        </ul>
       </div>
       <div class="auth-buttons" v-if="!username">
         <router-link to="/login">
@@ -33,6 +40,7 @@
   </nav>
 </template>
 
+
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
@@ -44,7 +52,7 @@ const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
 const { toggleMode } = modeStore;
 const userStore = useUserStore()
-const {username} = storeToRefs(userStore) 
+const { username } = storeToRefs(userStore)
 
 const mode = ref('');
 watchEffect(() => {
@@ -57,37 +65,37 @@ function handleSwitchMode() {
 
 const keyword = ref('');
 const router = useRouter();
+const suggestions = ref<string[]>([]);  // 添加搜索建议
 
-// async function fetchSuggestions() {
-//   if (keyword.value.trim() === "") {
-//     suggestions.value = [];
-//     return;
-//   }
+async function fetchSuggestions() {
+  if (keyword.value.trim() === "") {
+    suggestions.value = [];
+    return;
+  }
 
-//   try {
-//     const response = await fetch(`https://apis.netstart.cn/maoyan/search/suggest?kw=${encodeURIComponent(keyword.value)}`);
-//     const data = await response.json();
+  try {
+    const response = await fetch(`https://apis.netstart.cn/maoyan/search/suggest?kw=${encodeURIComponent(keyword.value)}`);
+    const data = await response.json();
 
-//     // 确认响应中是否有 suggestions 字段
-//     if (data.success) {
-//       suggestions.value = data.movies.list.map((movie: { nm: any; }) => movie.nm); // 获取电影名称
-//     } else {
-//       suggestions.value = []; // 如果没有成功，清空建议
-//     }
-//   } catch (error) {
-//     console.error('Error fetching suggestions:', error);
-//     suggestions.value = []; // 请求失败时清空建议
-//   }
-// }
+    if (data.success) {
+      suggestions.value = data.movies.list.map((movie: { nm: any; }) => movie.nm);
+    } else {
+      suggestions.value = []; 
+    }
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    suggestions.value = [];
+  }
+}
 
-// function selectSuggestion(suggestion: string) {
-//   keyword.value = suggestion;
-//   searchMovies();
-// }
+function selectSuggestion(suggestion: string) {
+  keyword.value = suggestion;
+  searchMovies();
+}
 
 async function searchMovies() {
   const searchTerm = keyword.value.trim();
-  if (searchTerm=="") {
+  if (searchTerm == "") {
     alert('请输入搜索关键词');
     return;
   }
@@ -158,9 +166,10 @@ nav {
     }
 
     .search-container {
+      position: relative;
       display: flex;
       align-items: center;
-      margin-left: 60px;
+      margin-left: 0px;
 
       .search-input {
         background-color: rgba(64, 64, 64, 0.3);
@@ -171,7 +180,7 @@ nav {
         font-size: 1.25rem;
         padding: 4px 8px;
         border-radius: 3px;
-        border-color: rgba(0,0,0,0.3);
+        border-color: rgba(0, 0, 0, 0.3);
       }
 
       .search-input:focus {
@@ -188,6 +197,36 @@ nav {
       .search-icon:hover {
         transform: scale(1.2);
       }
+      .suggestions-list {
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 70%;
+        background: white;
+        border: 1px solid #ccc;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .suggestions-list li {
+        width: 100%;
+        padding: 8px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 17px;
+        text-align: left;
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+
+
     }
 
     .auth-buttons {
@@ -251,13 +290,16 @@ nav.active {
 
   .container {
     padding: 5px 0;
+
     .search-input {
       background-color: #fff;
       color: #222;
     }
+
     .user-info {
       color: #222;
     }
+
     .logout-btn {
       color: #222;
     }
