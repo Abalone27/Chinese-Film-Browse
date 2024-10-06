@@ -9,6 +9,7 @@
     <p ref="paragraph2" :class="{ active: paragraph2Visible }">
       通过提供权威且高质量的电影信息和评分，帮助用户快速筛选和发现优秀的电影。本网站整合了多个可靠的电影数据源，提供全面的电影资料，包括电影海报、名称、评分等详细信息，方便用户做出观影决策。无论是想寻找高评分的经典电影，还是探索最新上映的热门影片，此网站都能为用户提供准确、及时的电影信息，极大地提升了用户获取电影资讯的效率和体验。
     </p>
+    <button class="chat" @click="JumpToChat()">进入在线电影聊天室</button>
   </section>
 </template>
 
@@ -16,6 +17,9 @@
 import { ref, onMounted, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
@@ -55,6 +59,10 @@ onMounted(() => {
   if (paragraph1.value) observer.observe(paragraph1.value);
   if (paragraph2.value) observer.observe(paragraph2.value);
 });
+
+function JumpToChat(this: any) {
+  router.push('/chat')
+}
 </script>
 
 <style scoped lang="scss">
@@ -110,4 +118,24 @@ section.container.night {
     color: #c4c2c2;
   }
 }
+
+.chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65%;
+  margin: 0 auto;
+  height: 5vh;
+  background-color: rgb(108, 79, 136);
+  color: azure;
+  border-radius: 9px;
+  font-size: 1.8rem;
+  padding: 3vh 3vh;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
 </style>

@@ -10,7 +10,7 @@
       </section>
     </div>
     
-    <!-- 如果是登录或注册页面，仅显示内容 -->
+    <!-- 如果是登录或注册页面或聊天室组件，仅显示内容 -->
     <div v-else>
       <router-view></router-view>
     </div>
@@ -28,7 +28,7 @@ const route=useRoute()
 
 // 检查当前路由是否是登录或注册页面
 const isAuthPage = computed(() => {
-  return route.path === '/login' || route.path === '/register';
+  return route.path === '/login' || route.path === '/register' || route.path == '/chat';
 });
 
 const { isNightMode } = storeToRefs(modeStore)

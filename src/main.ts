@@ -17,6 +17,7 @@ import Search from '@/views/Search.vue';
 import Coming from '@/views/Coming.vue';
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue';
+import Chat from '@/views/Chat.vue'
 
 const app = createApp(App);
 const router = createRouter({
@@ -27,7 +28,8 @@ const router = createRouter({
         { path: '/search', component: Search},
         { path: '/coming', component: Coming},
         { path: "/register", component: Register},
-        { path: "/login", component: Login}
+        { path: "/login", component: Login},
+        { path: "/chat", component: Chat}
     ],
 });
 
