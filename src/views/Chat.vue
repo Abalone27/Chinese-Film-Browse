@@ -1,26 +1,31 @@
 <template>
-    <div :class="mode">
-  <h1>自由公共聊天室</h1>
-  <ul>
-    <li v-for="(message, index) in messages" :key="index" :style="{ backgroundColor: message.color }">
-      <span class="time">{{ message.created_at }}</span>
-      <span v-if="message.isLogin" class="login">{{ message.msg }}</span>
-      <span v-else>{{ message.msg }}</span>
-    </li>
-  </ul>
-  <form @submit.prevent="sendMessage">
-    <input v-model="newMessage" type="text" placeholder="输入消息">
-    <button type="submit">发送</button>
-  </form>
-  <p>当前聊天室在线人数：{{ onlineCount }} 人</p>
+  <div :class="mode">
+        <h1>电影交流聊天室</h1>
+        <ul>
+            <li v-for="(message, index) in messages" :key="index" :style="{ backgroundColor: message.color }">
+                <span class="time">{{ message.created_at }}</span>
+                <span v-if="message.isLogin" class="login">{{ message.msg }}</span>
+                <span v-else><strong>{{ message.username }}:</strong> {{ message.msg }}</span> <!-- 添加用户名显示 -->
+            </li>
+        </ul>
+        <form @submit.prevent="sendMessage">
+            <input v-model="newMessage" type="text" placeholder="输入消息">
+            <button type="submit">发送</button>
+        </form>
+        <p>当前聊天室在线人数：{{ onlineCount }} 人</p>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted,watchEffect } from 'vue';
+import { ref, onMounted,onUnmounted,watchEffect } from 'vue';
 import { io } from 'socket.io-client';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
+import { useUserStore } from '@/stores/userStore';
+
+// 获取用户名
+const userStore = useUserStore()
+const { username } = storeToRefs(userStore)
 
 // 定义响应式数据
 const newMessage = ref('');
@@ -29,6 +34,7 @@ const onlineCount = ref(0);
 const usercolor = getRandomColor();
 const socket = io('http://localhost:3001', {
   withCredentials: true,  // 启用跨域凭证
+  query: { username: username.value }  // 传递用户名到服务器
 });
 const modeStore = useModeStore();
 const { isNightMode } = storeToRefs(modeStore);
@@ -66,9 +72,11 @@ function sendMessage() {
 
 // 当组件加载时处理Socket.io的消息
 onMounted(() => {
+    //确保用户登陆
+    if(username.value) {
     socket.on('connect', () => {
-  console.log('Connected to Socket.io server:', socket.id);
-});
+        console.log('Connected to Socket.io server:', username);
+    });
     
   // 加载历史消息
   socket.on('load previous messages', (loadedMessages) => {
@@ -84,7 +92,8 @@ onMounted(() => {
   socket.on('chat message', (msg: any) => {
     messages.value.push({
       ...msg,
-      created_at: new Date(msg.created_at).toLocaleString()
+      created_at: new Date(msg.created_at).toLocaleString(),
+      username: msg.username  // 确保包含用户名
     });
     scrollToBottom();
   });
@@ -104,6 +113,7 @@ onMounted(() => {
   socket.on('show count', (count: any) => {
     onlineCount.value = count;
   });
+}
 });
 
 // 滚动到页面底部
@@ -116,6 +126,12 @@ function scrollToBottom() {
 
 watchEffect(() => {
   mode.value = isNightMode.value ? "night" : "";
+});
+
+// 当组件销毁时断开 Socket 连接
+onUnmounted(() => {
+  socket.disconnect(); // 手动断开连接
+  console.log('Socket disconnected');
 });
 </script>
 

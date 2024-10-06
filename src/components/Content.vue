@@ -9,7 +9,7 @@
     <p ref="paragraph2" :class="{ active: paragraph2Visible }">
       通过提供权威且高质量的电影信息和评分，帮助用户快速筛选和发现优秀的电影。本网站整合了多个可靠的电影数据源，提供全面的电影资料，包括电影海报、名称、评分等详细信息，方便用户做出观影决策。无论是想寻找高评分的经典电影，还是探索最新上映的热门影片，此网站都能为用户提供准确、及时的电影信息，极大地提升了用户获取电影资讯的效率和体验。
     </p>
-    <button class="chat" @click="JumpToChat()">进入在线电影聊天室</button>
+    <button class="chat" @click="JumpToChat">进入在线电影聊天室</button>
   </section>
 </template>
 
@@ -18,6 +18,11 @@ import { ref, onMounted, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModeStore } from '../stores/modeStores';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+
+// 获取用户名
+const userStore = useUserStore()
+const { username } = storeToRefs(userStore)
 
 const router = useRouter();
 
@@ -61,7 +66,11 @@ onMounted(() => {
 });
 
 function JumpToChat(this: any) {
-  router.push('/chat')
+  if(username.value) {
+    router.push('/chat')
+  } else {
+    alert("请先登陆！")
+  }
 }
 </script>
 
