@@ -64,7 +64,7 @@ const fetchImages = async () => {
 onMounted(() => {
   window.scrollTo(0, 0);
   fetchImages();
-  document.body.style.overflow = 'hidden'; 
+  document.body.style.overflow = 'hidden';
 });
 
 onBeforeUnmount(() => {
@@ -187,6 +187,13 @@ input {
   margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+}
+
+input:focus {
+  transform: scale(1.03);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .submit-btn {
@@ -198,10 +205,12 @@ input {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
   background-color: #0056b3;
+  transform: scale(1.03);
 }
 
 .register-link {
